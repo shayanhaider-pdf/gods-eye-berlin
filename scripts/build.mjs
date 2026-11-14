@@ -1,0 +1,18 @@
+import { build } from 'esbuild';
+import { readFile, mkdir, writeFile, rm } from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+await rm('dist', { recursive: true, force: true });
+await mkdir('dist/server', { recursive: true });
+await mkdir('dist/.openai', { recursive: true });
+await mkdir('.build', { recursive: true });
+await build({entryPoints:['src/app.js'],bundle:true,format:'iife',target:'es2022',outfile:'.build/app.js',minify:true,loader:{'.png':'dataurl','.svg':'dataurl'}});
+let html=await readFile('src/index.html','utf8');
+const js=await readFile('.build/app.js','utf8');
+const css=(await readFile('src/style.css','utf8'))+'\n'+(await readFile('src/simulation.css','utf8'))+'\n'+(await readFile('src/intelligence.css','utf8'))+'\n'+(await readFile('src/overlays.css','utf8'));
+const mapcss=await readFile('node_modules/maplibre-gl/dist/maplibre-gl.css','utf8');
+const revision=createHash('sha256').update(js).update(css).digest('hex').slice(0,12);
+html=html.replace('src="/app.js"',`src="/app.js?v=${revision}"`).replace('href="/style.css"',`href="/style.css?v=${revision}"`);
+await writeFile('.build/assets.js','export const assets = '+JSON.stringify({'/':{type:'text/html; charset=utf-8',body:html},'/app.js':{type:'text/javascript; charset=utf-8',body:js},'/style.css':{type:'text/css; charset=utf-8',body:mapcss+'\n'+css}})+';');
+await build({entryPoints:['server/worker.js'],bundle:true,format:'esm',platform:'browser',target:'es2022',outfile:'dist/server/index.js',minify:true});
+await writeFile('dist/.openai/hosting.json',await readFile('.openai/hosting.json'));
+console.log('Built Around Me Worker with embedded frontend assets.');
