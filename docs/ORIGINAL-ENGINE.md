@@ -4,7 +4,7 @@ The GitHub repository includes the complete original engine as the pinned Git su
 
 The public Berlin site uses the existing MapLibre / Worker application, extended with world data and mission tools. It does **not** claim the entire Cesium / Node engine is running on that site. See `UPSTREAM-PARITY.md` for exact coverage.
 
-To run the complete engine on a computer with Node 22 or newer:
+To run the complete engine on a computer with Node 24.14+ (below 25), or Node 26.x, as required by the pinned upstream package:
 
 ```sh
 git clone --recurse-submodules https://github.com/shayanhaider-pdf/gods-eye-berlin.git

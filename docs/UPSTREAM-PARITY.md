@@ -134,6 +134,6 @@ Keep attribution inside the app as well as in documentation. Do not reuse upstre
 
 ## Verified provider availability
 
-Production checks returned live USGS events, CelesTrak orbital elements, Panoramax street photos and NASA daily imagery. During this release, Overpass timed out or rejected requests, Launch Library and iNaturalist returned rate limits, and the routing service could not be reached from the hosted runtime. These return explicit unavailable states. Berlin data-center queries can use the original OSM snapshot as a labelled reference fallback; its extraction date is unknown. Public provider availability is not a deployment guarantee.
+Production checks returned live USGS events, CelesTrak orbital elements, Panoramax street photos and NASA daily imagery. During this release, Overpass timed out or rejected requests, Launch Library and iNaturalist returned rate limits, and routing initially failed. Identified provider requests resolved routing; final production checks returned valid walking and driving routes. These return explicit unavailable states. Berlin data-center queries can use the original OSM snapshot as a labelled reference fallback; its extraction date is unknown. Public provider availability is not a deployment guarantee.
 
 The 11-record Berlin infrastructure subset in `data/berlin-infrastructure.json` is derived from the pinned upstream OpenStreetMap dataset and remains ODbL 1.0. See its source link; the original README states that the extraction date was not recorded. No contact-oriented tags were added.
