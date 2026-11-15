@@ -71,9 +71,8 @@ test('fixed-source fetch, per-area caching and outage status retain provenance',
   let calls = 0;
   globalThis.fetch = async (url, options) => {
     calls++;
-    assert.equal(url, 'https://overpass-api.de/api/interpreter');
-    assert.equal(options.method, 'POST');
-    assert.match(options.body.get('data'), /waterway/);
+    assert.equal(new URL(url).origin,'https://overpass-api.de');
+    assert.match(new URL(url).searchParams.get('data'), /waterway/);
     return Response.json({elements: [{type: 'node', id: 44, lat: 52.524, lon: 13.407, tags: {name: 'Public mapped weir', waterway: 'weir'}}]});
   };
   try {
@@ -86,7 +85,7 @@ test('fixed-source fetch, per-area caching and outage status retain provenance',
     assert.equal(first.source.license, 'ODbL 1.0');
     assert.equal(first.items[0].title, 'Public mapped weir');
     globalThis.fetch = async () => { throw new Error('offline'); };
-    const failed = await getGroundLayer('datacenters', {...here, lat: 52.525});
+    const failed = await getGroundLayer('datacenters', {...here, lat: 47.5});
     assert.equal(failed.source.status, 'unavailable');
     assert.deepEqual(failed.items, []);
   } finally { globalThis.fetch = original; }
@@ -102,4 +101,9 @@ test('NYC GBFS availability joins station metadata with supplied counts and does
 test('keyless Panoramax street photos preserve source, capture date and publicly supplied image URL',async()=>{
  const original=globalThis.fetch;globalThis.fetch=async u=>{assert.equal(new URL(u).origin,'https://api.panoramax.xyz');return Response.json({features:[{id:'photo',geometry:{type:'Point',coordinates:[13.4,52.52]},properties:{datetime:'2026-01-01T12:00:00Z',license:'CC BY-SA 4.0'},assets:{hd:{href:'https://photos.example.org/photo.jpg'}}}]});};
  try{const d=await getGroundLayer('streetlevel',area);assert.equal(d.source.status,'connected');assert.equal(d.items[0].imageUrl,'https://photos.example.org/photo.jpg');assert.equal(d.items[0].updatedAt,'2026-01-01T12:00:00.000Z');}finally{globalThis.fetch=original;}
+});
+
+test('an outage preserves attributed original Berlin infrastructure as a reference snapshot with unknown extraction date',async()=>{
+ const original=globalThis.fetch;globalThis.fetch=async()=>{throw new Error('Provider timed out');};
+ try{const d=await getGroundLayer('datacenters',{lat:52.52,lon:13.405,radius:5});assert.equal(d.source.status,'reference');assert.ok(d.items.length);assert.equal(d.source.updatedAt,null);assert.match(d.source.note,/extraction date was not recorded/);assert.ok(d.items.every(i=>i.status==='reference'));}finally{globalThis.fetch=original;}
 });

@@ -20,7 +20,7 @@ export default {async fetch(request,env,ctx){
   }
   if(u.pathname==='/api/route'){
    const pair=v=>typeof v==='string'&&v.split(',').every(x=>x.trim())?v.split(',').map(Number):null;
-   try{return json(await getDirections({from:pair(u.searchParams.get('from')),to:pair(u.searchParams.get('to')),mode:u.searchParams.get('mode')||'drive'}));}catch(e){return json({error:e instanceof RangeError?e.message:'Route unavailable. Try another point or mode.'},e instanceof RangeError?400:503);}
+   try{return json(await getDirections({from:pair(u.searchParams.get('from')),to:pair(u.searchParams.get('to')),mode:u.searchParams.get('mode')||'drive'}));}catch(e){return json({error:e instanceof RangeError?e.message:/^(Routing provider returned HTTP|No valid route)/.test(e.message)?e.message:'Routing provider timed out or could not be reached. Try another point or mode.'},e instanceof RangeError?400:503);}
   }
   if(u.pathname==='/api/overlays'){
    const lat=coordinate(u.searchParams.get('lat'),NaN),lon=coordinate(u.searchParams.get('lon'),NaN),radius=coordinate(u.searchParams.get('radius'),5),kind=u.searchParams.get('kind');

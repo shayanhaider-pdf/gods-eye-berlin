@@ -4,8 +4,8 @@ export async function getDirections({from,to,mode='drive'}) {
   if(!Object.hasOwn(modes,mode)||!valid(from)||!valid(to))throw new RangeError('Choose valid start and end coordinates and drive, walk or cycle.');
   const u = new URL(modes[mode]+from.join(',')+';'+to.join(','));
   u.search=new URLSearchParams({overview:'full',geometries:'geojson',steps:'true',alternatives:'false'});
-  const r=await fetch(u,{signal:AbortSignal.timeout(10000),headers:{Accept:'application/json'}});
-  if(!r.ok)throw new Error('The public routing provider is unavailable.');
+  const r=await fetch(u,{signal:AbortSignal.timeout(10000),headers:{Accept:'application/json','User-Agent':'GodEyeBerlin/3.0 (+https://github.com/shayanhaider-pdf/gods-eye-berlin)'}});
+  if(!r.ok)throw new Error('Routing provider returned HTTP '+r.status+'.');
   const d=await r.json(),route=d.routes?.[0];
   if(d.code!=='Ok'||route?.geometry?.type!=='LineString'||!Array.isArray(route.geometry.coordinates)||route.geometry.coordinates.length>20000||!route.geometry.coordinates.every(valid))throw new Error('No valid route was found.');
   return {route:route.geometry,distance:route.distance,duration:route.duration,mode,steps:(route.legs||[]).flatMap(l=>l.steps||[]).slice(0,150).map(s=>({name:String(s.name||'').slice(0,200),distance:s.distance,duration:s.duration,type:s.maneuver?.type,modifier:s.maneuver?.modifier})),source:{name:'OpenStreetMap / OSRM routing',url:'https://www.openstreetmap.org/copyright',note:'Calculated route, not observed traffic. Travel times are estimates.'}};

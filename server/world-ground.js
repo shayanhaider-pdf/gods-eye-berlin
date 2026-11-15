@@ -1,3 +1,4 @@
+import berlinInfrastructure from '../data/berlin-infrastructure.json' with {type:'json'};
 import {distanceKm, lineIntersectsRadius} from './transport.js';
 
 const OVERPASS = 'https://overpass-api.de/api/interpreter';
@@ -109,6 +110,13 @@ async function streetPhotos(area) {
  return {items,source:{name:'Panoramax public street imagery',url:'https://panoramax.xyz/',status:'connected',count:items.length,note:'Public photographs where contributors have coverage; optional Mapillary/Google integrations remain separate.',updatedAt:new Date().toISOString()}};
  }catch{return {items:[],source:{name:'Panoramax public street imagery',url:'https://panoramax.xyz/',status:'unavailable',count:0,note:'Public photograph provider could not be reached. No synthetic street images are substituted.',updatedAt:null}};}
 }
+function infrastructureFallback(kind,area) {
+ if(kind!=='datacenters')return null;
+ const elements=berlinInfrastructure.features.map(f=>{const coords=[];const walk=c=>{if(!Array.isArray(c)||!c.length)return;if(typeof c[0]==='number')coords.push(c);else c.forEach(walk);};walk(f.geometry.coordinates);const centre=coords.reduce((a,p)=>[a[0]+p[0]/coords.length,a[1]+p[1]/coords.length],[0,0]);return {id:Number(f.properties.osm_id),type:f.geometry.type==='Point'?'node':'way',tags:f.properties.tags,lat:centre[1],lon:centre[0],geometry:f.geometry.type==='Polygon'?f.geometry.coordinates[0].map(p=>({lon:p[0],lat:p[1]})):undefined};});
+ const d=parseGroundElements(kind,{elements},area);if(!d.items.length)return null;
+ return {...d,source:{...source(kind,'reference',d.items.length),url:berlinInfrastructure.sourceUrl,updatedAt:null,note:'The live map provider is unavailable. Showing attributed ODbL reference records from the pinned original God Eye snapshot. Its original extraction date was not recorded; these are not live observations.'}};
+}
+
 export async function getGroundLayer(kind, area, env = {}) {
   if (!groundKinds.includes(kind)) throw new RangeError('Unknown ground layer.');
   const {lat, lon, radius} = validateGroundArea(area);
@@ -121,7 +129,7 @@ export async function getGroundLayer(kind, area, env = {}) {
   if (pending.has(key)) return pending.get(key);
   const request = (async () => {
     try {
-      const response = await fetch(OVERPASS, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json'}, body: new URLSearchParams({data: groundQuery(kind, {lat, lon, radius})}), signal: AbortSignal.timeout(9000)});
+      const u=new URL(OVERPASS);u.search=new URLSearchParams({data:groundQuery(kind,{lat,lon,radius})});const response=await fetch(u,{headers:{Accept:'application/json','User-Agent':'GodEyeBerlin/3.0 (+https://github.com/shayanhaider-pdf/gods-eye-berlin)'},signal:AbortSignal.timeout(9000)});
       if (!response.ok) throw new Error(`Provider returned ${response.status}`);
       const text = await response.text();
       if (text.length > 8 * 1024 * 1024) throw new Error('The map provider response is too large');
@@ -130,8 +138,8 @@ export async function getGroundLayer(kind, area, env = {}) {
       cache.set(key, {time: Date.now(), value});
       while (cache.size > 48) cache.delete(cache.keys().next().value);
       return value;
-    } catch {
-      return {items: [], features: fc([]), source: source(kind, 'unavailable', 0, 'The public map provider could not be reached. No substitute locations were generated.')};
+    } catch(error) {
+      const fallback=infrastructureFallback(kind,{lat,lon,radius});if(fallback)return fallback;return {items: [], features: fc([]), source: source(kind, 'unavailable', 0, 'The public map provider could not be reached. '+(error?.name==='TimeoutError'?'Provider timed out.':clean(error?.message).slice(0,120)))};
     } finally { pending.delete(key); }
   })();
   pending.set(key, request);

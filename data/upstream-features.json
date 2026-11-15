@@ -193,7 +193,7 @@
       "keys": "None",
       "runtime": "Bundled ODbL snapshot and attribution",
       "status": "partial",
-      "deploymentNote": "Live-query OSM reference locations and descriptive tags; not a global bundled extract."
+      "deploymentNote": "Live-query OSM reference locations and descriptive tags; not a global bundled extract. Berlin provider outages can use 11 attributed ODbL original snapshot records, filtered to the scan radius; the extraction date is unknown."
     },
     {
       "id": "dams",
