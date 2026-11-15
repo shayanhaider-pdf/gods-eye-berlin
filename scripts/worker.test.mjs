@@ -79,7 +79,7 @@ test('search keeps special-character query intact and omits malformed result coo
     const r=await worker.fetch(request('/api/search?'+new URLSearchParams({q:query})));
     assert.equal(r.status,200);
     assert.ok(called);
-    assert.deepEqual((await r.json()).results,[{lon:13.4,lat:52.5,label:'Alexanderplatz, Berlin'}]);
+    assert.deepEqual((await r.json()).results,[{lon:13.4,lat:52.5,label:'Alexanderplatz, Berlin',zoom:17.2}]);
   }finally{globalThis.fetch=original;}
 });
 
@@ -95,4 +95,19 @@ test('search distinguishes invalid user input from invalid provider data and net
     assert.equal(r.status,503);
     assert.ok((await r.json()).error);
   }finally{globalThis.fetch=original;}
+});
+
+test('address search preserves house number and postcode while city matches use an area camera zoom',async()=>{
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>payload({features:[
+  {geometry:{type:'Point',coordinates:[13.3966,52.5173]},properties:{street:'Unter den Linden',housenumber:'6',postcode:'10117',city:'Berlin',country:'Germany'}},
+  {geometry:{type:'Point',coordinates:[13.4,52.5]},properties:{name:'Berlin',city:'Berlin',country:'Germany',osm_value:'city'}}
+ ]});
+ try{
+  const d=await (await worker.fetch(request('/api/search?q=Unter+den+Linden+6'))).json();
+  assert.equal(d.results[0].label,'Unter den Linden 6, 10117 Berlin, Germany');
+  assert.equal(d.results[0].zoom,17.2);
+  assert.equal(d.results[1].label,'Berlin, Germany');
+  assert.equal(d.results[1].zoom,12.5);
+ }finally{globalThis.fetch=original;}
 });

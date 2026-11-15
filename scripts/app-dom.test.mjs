@@ -18,7 +18,7 @@ const features = [
 ];
 const routes = features.map((f, i) => ({ type: 'Feature', properties: { id: 'route' + i, name: i ? 'U2' : 'U6', mode: 'ubahn', color: '#0066cc' }, geometry: { type: 'LineString', coordinates: [f.geometry.coordinates, [13.405, 52.52]] } }));
 
-async function boot() {
+async function boot({geolocation, permissions} = {}) {
   const { window } = parseHTML(html);
   const storage = new Map();
   const calls = [];
@@ -38,7 +38,7 @@ async function boot() {
   };
   const timers = new Set();
   const timeout = (fn, ms) => { const timer = setTimeout(() => { timers.delete(timer); fn(); }, ms); timer.unref?.(); timers.add(timer); return timer; };
-  const context = vm.createContext({ window, document: window.document, navigator: { geolocation: { getCurrentPosition: (_success, error) => error({ code: 1 }) } }, location: new URL('https://around-me.test'), console, localStorage: { getItem: key => storage.get(key) || null, setItem: (key, value) => storage.set(key, value) }, matchMedia: () => ({ matches: false }), fetch: fixtureFetch, URL, URLSearchParams, Response, Request, AbortController, Blob, FormData, setTimeout: timeout, clearTimeout: timer => { timers.delete(timer); clearTimeout(timer); }, setInterval: () => 0, clearInterval: () => {}, requestAnimationFrame: () => 0, cancelAnimationFrame: () => {}, performance, Event: window.Event });
+  const context = vm.createContext({ window, document: window.document, navigator: { geolocation: geolocation || { getCurrentPosition: (_success, error) => error({ code: 1 }) }, permissions }, location: new URL('https://around-me.test'), console, localStorage: { getItem: key => storage.get(key) || null, setItem: (key, value) => storage.set(key, value) }, matchMedia: () => ({ matches: false }), fetch: fixtureFetch, URL, URLSearchParams, Response, Request, AbortController, Blob, FormData, setTimeout: timeout, clearTimeout: timer => { timers.delete(timer); clearTimeout(timer); }, setInterval: () => 0, clearInterval: () => {}, requestAnimationFrame: () => 0, cancelAnimationFrame: () => {}, performance, Event: window.Event });
   vm.runInContext(appCode, context, { timeout: 5000 });
   const q = selector => window.document.querySelector(selector);
   const flush = async () => { for (let i = 0; i < 4; i++) await new Promise(resolve => setImmediate(resolve)); };
@@ -109,4 +109,32 @@ test('late location-search responses do not overwrite a city change and geolocat
     assert.equal(app.q('#locate').disabled, false);
     assert.match(app.q('#toast').textContent, /Location was not shared/);
   } finally { app.close(); }
+});
+
+test('search immediately selects a precise place and supports direct coordinates and current-location commands',async()=>{
+ const requests=[];
+ const app=await boot({geolocation:{getCurrentPosition(success,error,options){requests.push({success,error,options});}}});
+ try{
+  assert.equal(requests.length,1,'startup should request location without a button click');
+  app.q('#location-query').value='Berlin test address';
+  await app.q('#search-form').onsubmit({preventDefault(){}});
+  await app.flush();
+  assert.match(app.q('#area-name').textContent,/Berlin test address/);
+  requests[0].success({coords:{latitude:52.6,longitude:13.6,accuracy:50},timestamp:100});
+  await app.flush();
+  assert.match(app.q('#area-name').textContent,/Berlin test address/,'a late startup fix must not replace the search');
+  app.q('#location-query').value='52.516275, 13.377704';
+  await app.q('#search-form').onsubmit({preventDefault(){}});
+  await app.flush();
+  assert.match(app.q('#area-coords').textContent,/52.516275.*13.377704/);
+  app.q('#location-query').value='my location';
+  await app.q('#search-form').onsubmit({preventDefault(){}});
+  assert.equal(requests.length,2);
+  requests[1].success({coords:{latitude:52.530123,longitude:13.420456,accuracy:8},timestamp:200});
+  await app.flush();
+  assert.match(app.q('#area-name').textContent,/Your location/);
+  assert.match(app.q('#area-coords').textContent,/52.530123.*13.420456/);
+  assert.match(app.q('#location-status').textContent,/accuracy ±8 m/);
+  assert.equal(app.q('#locate').getAttribute('aria-pressed'),'true');
+ }finally{app.close();}
 });
