@@ -4,7 +4,7 @@ God Eye Berlin (also called Around Me) combines publicly available information a
 
 ## Current delivery
 
-Version 2 is deployed at https://around-me-berlin-gods-eye.arsalanhaider.chatgpt.site. Its source was originally developed in the connected Sites workspace and is now maintained here as a complete GitHub snapshot.
+Version 2 is publicly accessible at https://around-me-berlin-gods-eye.arsalanhaider.chatgpt.site. Visitors can open it directly from this repository without signing in to ChatGPT or GitHub. Its source was originally developed in the connected Sites workspace and is now maintained here as a complete GitHub snapshot.
 
 Implemented: selectable transport modes and named stations; history, architecture, memorials, culture, geography and park layers; public activity and departure data; animated people, vehicles and activity scenes; flying tours; rain radar, model weather and aircraft layers; district pulse, rule-based signals, connection tracing and browser-recorded replay.
 

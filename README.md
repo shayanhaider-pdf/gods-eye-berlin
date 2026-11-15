@@ -4,7 +4,7 @@
 
 A cinematic Berlin atlas with transport networks, named stations, history, public activity, weather overlays and clearly labeled simulated city movement.
 
-**To see the app:** click **Open God Eye Berlin** above. The existing deployed app currently requires its authorized ChatGPT sign-in; public GitHub source does not change its access settings.
+**To see the app:** click **Open God Eye Berlin** above. It opens directly in your browser. **No ChatGPT account, GitHub account, sign-in or access request is required.**
 
 **To run it on your computer:**
 
@@ -72,4 +72,4 @@ The app does not fabricate incidents, animate vehicles as observations, or treat
 
 Data adapter/parser and Worker boundary/integration tests cover expiration, time zones, invalid inputs, malformed provider responses and partial failure. Live Berlin adapter requests were smoke-tested during development. The managed environment lacks the required browser-control tool, so visual/mobile interaction QA could not be completed here. See QA-plan.md for the browser acceptance checklist.
 
-New Sites are owner-private by default. Publishing preserves that audience. The Sites workflow helper is absent in this image, so `scripts/prepare-source.mjs` provides an equivalent credential-on-stdin Git push and deployment-archive fallback. It never writes repository credentials to disk.
+The current deployment is public. Visitor access does not require a ChatGPT or GitHub account. Maintainer deployment permissions are separate from visitor access. The Sites workflow helper is absent in this image, so `scripts/prepare-source.mjs` provides an equivalent credential-on-stdin Git push and deployment-archive fallback. It never writes repository credentials to disk.

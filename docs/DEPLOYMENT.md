@@ -25,6 +25,8 @@ The local server binds to 127.0.0.1 by default and serves the same Worker implem
 
 https://around-me-berlin-gods-eye.arsalanhaider.chatgpt.site
 
+This is a public app. Opening it and using its map/data routes requires no account, sign-in or access request. Anonymous HTTP checks passed for the app, JavaScript, stylesheet, health endpoint, transport data and rain radar, with no login redirects.
+
 The existing Sites identity is retained in .openai/hosting.json. Source upload and production publication require an authorized Sites connection; there are no deployment credentials in this repository. scripts/prepare-source.mjs is a Sites-specific helper that accepts a short-lived credential through stdin. Do not place credentials in repository files.
 
 A GitHub commit does not automatically publish a new Sites version. Until a dedicated deployment workflow is configured, application changes must be built, verified and explicitly deployed to the existing Site.
