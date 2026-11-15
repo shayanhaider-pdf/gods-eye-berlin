@@ -1,0 +1,531 @@
+{
+  "repository": "bilawalsidhu/gods-eye-view",
+  "commit": "3d25a284f9186dcc936c26e0c4f745337b402e37",
+  "auditedAt": "2026-11-15",
+  "status": "partial-public-integration-full-engine-pinned",
+  "libraryEntryCount": 96,
+  "features": [
+    {
+      "id": "globe",
+      "name": "3D globe, map stacks and terrain",
+      "category": "Map",
+      "provider": "Esri, OSM, Cesium ion, Google",
+      "keys": "None for Esri/OSM; Cesium ion or Google for photorealistic 3D",
+      "runtime": "Cesium WebGL client; terrain/imagery services",
+      "status": "partial",
+      "deploymentNote": "MapLibre globe, tactical/street/satellite maps, buildings and optional terrain relief. Cesium/Google photorealistic 3D remains in the original engine."
+    },
+    {
+      "id": "flights",
+      "name": "Civil flights, metadata and trails",
+      "category": "Live data",
+      "provider": "OpenSky, adsb.lol",
+      "keys": "Optional OpenSky credentials",
+      "runtime": "Bounded server polling/cache",
+      "status": "partial",
+      "deploymentNote": "Existing regional public aircraft observations, metadata and trails; provider availability varies."
+    },
+    {
+      "id": "military",
+      "name": "Military ADS-B flights and emergency broadcasts",
+      "category": "Live data",
+      "provider": "adsb.lol",
+      "keys": "None",
+      "runtime": "Bounded server polling/cache",
+      "status": "partial",
+      "deploymentNote": "Regional adsb.lol public military database flags only; no inferred classifications."
+    },
+    {
+      "id": "vessels",
+      "name": "Live AIS vessels",
+      "category": "Live data",
+      "provider": "AISStream",
+      "keys": "AISStream key",
+      "runtime": "Persistent outbound WebSocket collector and cache",
+      "status": "external-runtime-or-provider-required",
+      "deploymentNote": "Available in the pinned original engine subject to its provider/runtime requirements; not implemented in the public Berlin app."
+    },
+    {
+      "id": "satellites",
+      "name": "Satellites, six classes, orbits and visible passes",
+      "category": "Space",
+      "provider": "CelesTrak, SATCAT, UCS",
+      "keys": "None",
+      "runtime": "TLE propagation and satellite metadata",
+      "status": "partial",
+      "deploymentNote": "CelesTrak visual group, current SGP4 positions, 90-minute predicted ground tracks and 24-hour geometric passes. No six-class catalog or optical-visibility prediction."
+    },
+    {
+      "id": "missions",
+      "name": "30-day space missions and launch playback",
+      "category": "Space",
+      "provider": "Launch Library 2, CelesTrak",
+      "keys": "Optional paid LL2 token",
+      "runtime": "Server cache; launch/orbit models",
+      "status": "partial",
+      "deploymentNote": "Launch Library upcoming launch schedule and pad locations; no modeled launch playback."
+    },
+    {
+      "id": "earthquakes",
+      "name": "Earthquakes, magnitude/depth/time details",
+      "category": "Events",
+      "provider": "USGS",
+      "keys": "None",
+      "runtime": "GeoJSON polling",
+      "status": "implemented",
+      "deploymentNote": "USGS global last-24-hour events with magnitude, depth and times."
+    },
+    {
+      "id": "air-quality",
+      "name": "Canadian AQHI readings",
+      "category": "Weather",
+      "provider": "ECCC GeoMet",
+      "keys": "None",
+      "runtime": "Canada-only station catalog and observations",
+      "status": "partial",
+      "deploymentNote": "Open-Meteo model values; ECCC Canadian AQHI station feed is not integrated."
+    },
+    {
+      "id": "traffic",
+      "name": "Road simulation and measured congestion",
+      "category": "Transport",
+      "provider": "OSM, TomTom",
+      "keys": "TomTom for live traffic flow",
+      "runtime": "Road tiles, optional flow proxy; positions simulated",
+      "status": "partial",
+      "deploymentNote": "Existing illustrative cars and public roadworks; mapped road signals. No TomTom observed congestion."
+    },
+    {
+      "id": "transit",
+      "name": "Live buses, trams, metro, ferries and delayed playback",
+      "category": "Transport",
+      "provider": "Operator GTFS-Realtime feeds",
+      "keys": "None for supported feeds",
+      "runtime": "Protocol parsing, histories and regional feeds",
+      "status": "partial",
+      "deploymentNote": "Berlin VBB network/stations, departures and simulated vehicles; mapped stops elsewhere. Not GTFS-Realtime vehicle tracking."
+    },
+    {
+      "id": "rail",
+      "name": "Live trains, rail paths, next stops and delays",
+      "category": "Transport",
+      "provider": "30 operator feeds and opt-in GTFS packs",
+      "keys": "None for supported feeds",
+      "runtime": "Protocol/XML parsing, built static route packs",
+      "status": "partial",
+      "deploymentNote": "Berlin published paths and mapped railway geometry. No original 30-operator live rail integrations."
+    },
+    {
+      "id": "bikeshare",
+      "name": "Bike station availability",
+      "category": "Transport",
+      "provider": "GBFS operators",
+      "keys": "None",
+      "runtime": "Discovery/catalog and regional station queries",
+      "status": "partial",
+      "deploymentNote": "Live Citi Bike GBFS station availability in NYC; mapped OSM rental stations elsewhere."
+    },
+    {
+      "id": "directions",
+      "name": "Drive/walk/cycle routing, steps and route flights",
+      "category": "Utilities",
+      "provider": "OSRM / FOSSGIS / OSM",
+      "keys": "None",
+      "runtime": "Bounded routing proxy and camera playback",
+      "status": "partial",
+      "deploymentNote": "Drive/walk/cycle OSRM routes, distance, estimated time, steps and whiteboard route. No continuous route-flight playback."
+    },
+    {
+      "id": "cctv",
+      "name": "Mapped public still cameras, live HLS and nearest-camera handoff",
+      "category": "Cameras",
+      "provider": "Official regional transportation agencies",
+      "keys": "Some packs require agreements or credentials",
+      "runtime": "Image/HLS proxies; bounded sessions, source licenses",
+      "status": "partial",
+      "deploymentNote": "OSM mapped camera locations and tags only. No original official camera/HLS packs or nearest-camera handoff."
+    },
+    {
+      "id": "alpr",
+      "name": "Mapped ALPR camera locations and tags",
+      "category": "Infrastructure",
+      "provider": "OpenStreetMap / DeFlock mapping",
+      "keys": "None",
+      "runtime": "Viewport OSM acquisition; locations only",
+      "status": "implemented",
+      "deploymentNote": "OSM publicly mapped ALPR/ANPR camera locations and tags only."
+    },
+    {
+      "id": "street-level",
+      "name": "Embedded street imagery and coverage",
+      "category": "Cameras",
+      "provider": "Mapillary, Google, KartaView, Panoramax",
+      "keys": "Mapillary token; Google key; none for KartaView/Panoramax",
+      "runtime": "Provider viewers and coverage/photo services",
+      "status": "partial",
+      "deploymentNote": "Keyless Panoramax public photos where covered; external Street View links. No full embedded panorama/coverage browser."
+    },
+    {
+      "id": "recent-imagery",
+      "name": "Recent Sentinel/Landsat/VIIRS imagery, box selection, days and exports",
+      "category": "Cameras",
+      "provider": "NASA CMR, GIBS, Worldview Snapshots",
+      "keys": "None",
+      "runtime": "Browser catalog/tiles; availability and attribution",
+      "status": "partial",
+      "deploymentNote": "NASA GIBS daily true-color observed tiles. No multi-sensor scene search, box selection, historical dates or image exports."
+    },
+    {
+      "id": "radio",
+      "name": "World radio map and analog tuner",
+      "category": "Audio",
+      "provider": "Radio Browser / broadcasters",
+      "keys": "None",
+      "runtime": "Directory proxy, playback stream compatibility",
+      "status": "partial",
+      "deploymentNote": "Radio Browser geolocated directory and HTTPS station playback where supported. No analog tuner simulation."
+    },
+    {
+      "id": "datacenters",
+      "name": "Datacenter infrastructure",
+      "category": "Infrastructure",
+      "provider": "OSM extract",
+      "keys": "None",
+      "runtime": "Bundled ODbL snapshot and attribution",
+      "status": "partial",
+      "deploymentNote": "Live-query OSM reference locations and descriptive tags; not a global bundled extract."
+    },
+    {
+      "id": "dams",
+      "name": "Dam infrastructure",
+      "category": "Infrastructure",
+      "provider": "OpenInfraMap / OSM",
+      "keys": "None",
+      "runtime": "Bundled ODbL snapshot and attribution",
+      "status": "partial",
+      "deploymentNote": "Live-query OSM dams/weirs and mapped geometries."
+    },
+    {
+      "id": "cables",
+      "name": "Submarine cable routes and landings",
+      "category": "Infrastructure",
+      "provider": "TeleGeography",
+      "keys": "None; noncommercial data terms",
+      "runtime": "Bundled CC BY-NC-SA data",
+      "status": "partial",
+      "deploymentNote": "OSM mapped submarine-cable references only; TeleGeography dataset not copied."
+    },
+    {
+      "id": "installations",
+      "name": "Mapped military-site context",
+      "category": "Infrastructure",
+      "provider": "OpenFreeMap / OSM",
+      "keys": "Optional configured Overpass or Google",
+      "runtime": "Viewport tile acquisition; incomplete community mapping",
+      "status": "partial",
+      "deploymentNote": "OSM reference boundaries/names/tags only."
+    },
+    {
+      "id": "airspace",
+      "name": "FAA prohibited and restricted special-use airspace",
+      "category": "Infrastructure",
+      "provider": "FAA SUA",
+      "keys": "None",
+      "runtime": "Paged FeatureServer polygons; US-only and not UAS planning",
+      "status": "partial",
+      "deploymentNote": "OSM airspace reference features where mapped, not official FAA/DFS restrictions or NOTAMs."
+    },
+    {
+      "id": "firms",
+      "name": "Active fire detections",
+      "category": "Events",
+      "provider": "NASA FIRMS",
+      "keys": "FIRMS map key for live detections",
+      "runtime": "Bounded CSV/raster queries; time/source metadata",
+      "status": "partial",
+      "deploymentNote": "NASA EONET active wildfire event points, not FIRMS fire pixels."
+    },
+    {
+      "id": "perimeters",
+      "name": "Wildfire perimeters and containment",
+      "category": "Events",
+      "provider": "NIFC WFIGS, InciWeb",
+      "keys": "None",
+      "runtime": "Paged ArcGIS polygons and verified incident links",
+      "status": "partial",
+      "deploymentNote": "NIFC current US wildfire perimeter polygons, subject to provider/region coverage."
+    },
+    {
+      "id": "gnss",
+      "name": "Navigation accuracy aggregation",
+      "category": "Events",
+      "provider": "adsb.lol; GPSJAM formula",
+      "keys": "None",
+      "runtime": "Point snapshot aggregation; no interference assertion",
+      "status": "external-runtime-or-provider-required",
+      "deploymentNote": "Available in the pinned original engine subject to its provider/runtime requirements; not implemented in the public Berlin app."
+    },
+    {
+      "id": "ghostmaps",
+      "name": "S2 GhostMaps selectable intelligence products",
+      "category": "Events",
+      "provider": "S2 Underground GitHub KMZ",
+      "keys": "None; CC BY-NC-SA 4.0 data",
+      "runtime": "KMZ parsing, edition selection and event-age filters",
+      "status": "external-runtime-or-provider-required",
+      "deploymentNote": "Available in the pinned original engine subject to its provider/runtime requirements; not implemented in the public Berlin app."
+    },
+    {
+      "id": "shipwrecks",
+      "name": "Shipwreck records, eras, depth and histories",
+      "category": "Events",
+      "provider": "EMODnet, Wikidata",
+      "keys": "None",
+      "runtime": "WFS/SPARQL merge and stale-source metadata",
+      "status": "partial",
+      "deploymentNote": "OSM wreck locations and tags; not the original EMODnet/Wikidata catalog and history."
+    },
+    {
+      "id": "news",
+      "name": "Conflict and local news, hotspots, timelines and outlines",
+      "category": "Events",
+      "provider": "GDELT, optional Liveuamap / World News API",
+      "keys": "World News API for Local; paid Liveuamap optional",
+      "runtime": "News ingestion/cache; country outline resolution",
+      "status": "partial",
+      "deploymentNote": "GDELT geocoded report mentions in the region. No full conflict/local news timelines or country briefings."
+    },
+    {
+      "id": "wildlife",
+      "name": "Wildlife observations and density with photo credits",
+      "category": "Wildlife",
+      "provider": "iNaturalist, Acartia",
+      "keys": "None",
+      "runtime": "Paced queries; sensitive locations preserved",
+      "status": "partial",
+      "deploymentNote": "iNaturalist research-grade observations, public coordinates, photo/source links and dates. No Acartia density engine."
+    },
+    {
+      "id": "wind",
+      "name": "Animated forecast wind and speed/temperature/pressure fields",
+      "category": "Weather",
+      "provider": "NOAA GFS, ECMWF IFS",
+      "keys": "None",
+      "runtime": "GRIB decoding/grid cache and particle renderer",
+      "status": "partial",
+      "deploymentNote": "Existing regional model wind arrows and temperature/pollution fields. No GFS/ECMWF forecast-time animation."
+    },
+    {
+      "id": "observed-weather",
+      "name": "Observed rain, satellite clouds and lightning timeline",
+      "category": "Weather",
+      "provider": "NOAA nowCOAST",
+      "keys": "None",
+      "runtime": "Observed-frame services; regional coverage limits",
+      "status": "partial",
+      "deploymentNote": "Existing animated observed rain radar plus NASA daily cloud-context imagery. No integrated lightning timeline."
+    },
+    {
+      "id": "cyclones",
+      "name": "Cyclone advisories, forecast tracks and uncertainty cones",
+      "category": "Weather",
+      "provider": "NOAA NHC / CPHC",
+      "keys": "None",
+      "runtime": "Advisory GIS parsing; Atlantic/Pacific coverage",
+      "status": "partial",
+      "deploymentNote": "NHC/CPHC advisory positions and measurements; not forecast tracks/cones or all basins."
+    },
+    {
+      "id": "seamarks",
+      "name": "Sea mark overlay",
+      "category": "Map",
+      "provider": "OpenSeaMap",
+      "keys": "None",
+      "runtime": "Raster tile overlay; attribution",
+      "status": "partial",
+      "deploymentNote": "OSM mapped sea marks and descriptive tags."
+    },
+    {
+      "id": "pistes",
+      "name": "Ski piste overlay",
+      "category": "Map",
+      "provider": "OpenSnowMap",
+      "keys": "None",
+      "runtime": "Raster tile overlay; no bulk download",
+      "status": "partial",
+      "deploymentNote": "OSM mapped piste paths and areas."
+    },
+    {
+      "id": "osm-places",
+      "name": "Place search, filters and analytical follow-ups",
+      "category": "Utilities",
+      "provider": "Configured OSM Overpass server",
+      "keys": "Own Overpass upstream configuration",
+      "runtime": "Bounded OSM proxy and query tools",
+      "status": "partial",
+      "deploymentNote": "Existing name/address/coordinate search with exact returned-point pin and flying transitions."
+    },
+    {
+      "id": "local-adsb",
+      "name": "Local ADS-B receiver input",
+      "category": "Local hardware",
+      "provider": "User receiver",
+      "keys": "Own receiver",
+      "runtime": "Local Node receiver bridge",
+      "status": "external-runtime-or-provider-required",
+      "deploymentNote": "Available in the pinned original engine subject to its provider/runtime requirements; not implemented in the public Berlin app."
+    },
+    {
+      "id": "local-sdr",
+      "name": "Local RTL-SDR controls",
+      "category": "Local hardware",
+      "provider": "User USB RTL-SDR receiver",
+      "keys": "Own hardware",
+      "runtime": "WebUSB-compatible browser / receiver stack",
+      "status": "external-runtime-or-provider-required",
+      "deploymentNote": "Available in the pinned original engine subject to its provider/runtime requirements; not implemented in the public Berlin app."
+    },
+    {
+      "id": "library",
+      "name": "Data Library: 96 source manifests",
+      "category": "Data library",
+      "provider": "Regional imagery, environment, hazards, infrastructure and terrain providers",
+      "keys": "Per-entry terms; most keyless",
+      "runtime": "Validated manifests; datasets, imagery and terrain loaders",
+      "status": "external-runtime-or-provider-required",
+      "deploymentNote": "Available in the pinned original engine subject to its provider/runtime requirements; not implemented in the public Berlin app."
+    },
+    {
+      "id": "models",
+      "name": "Life-size 3D fleet and glyph/model level of detail",
+      "category": "Presentation",
+      "provider": "Upstream procedural models",
+      "keys": "None",
+      "runtime": "Cesium model collections and type mappings",
+      "status": "external-runtime-or-provider-required",
+      "deploymentNote": "Available in the pinned original engine subject to its provider/runtime requirements; not implemented in the public Berlin app."
+    },
+    {
+      "id": "tracking",
+      "name": "Click-to-track, trails, metadata, detection boxes and IDs",
+      "category": "Presentation",
+      "provider": "Loaded source entities",
+      "keys": "None",
+      "runtime": "Tracking lifecycle, picking and projected labels",
+      "status": "partial",
+      "deploymentNote": "Loaded-contact camera follow, observed-position trail and screen-space ID boxes. Not image-based detection."
+    },
+    {
+      "id": "contacts",
+      "name": "250-km contacts roster and global context",
+      "category": "Presentation",
+      "provider": "Loaded flights, military, vessels, installations",
+      "keys": "Depends on selected feeds",
+      "runtime": "Context ownership, filters and camera state",
+      "status": "partial",
+      "deploymentNote": "Loaded Berlin/world contact roster; no universal exhaustive 250-km radar."
+    },
+    {
+      "id": "cockpit",
+      "name": "Aircraft cockpit, vessel bridge and orbital views",
+      "category": "Presentation",
+      "provider": "Loaded tracked entities and terrain",
+      "keys": "Depends on feed / map source",
+      "runtime": "Cesium 3D cameras, ground/mesh guards",
+      "status": "partial",
+      "deploymentNote": "Oblique follow camera over supplied ground coordinates. No true 3D vehicle interior, bridge or orbital camera."
+    },
+    {
+      "id": "sensor-looks",
+      "name": "CRT, NVG, thermal/FLIR, Noir and other sensor looks",
+      "category": "Presentation",
+      "provider": "GLSL post-processing",
+      "keys": "None",
+      "runtime": "Cesium shader pipeline; visual effect, not thermal measurement",
+      "status": "partial",
+      "deploymentNote": "CRT/NVG/thermal-look/Noir display filters. No measured thermal imagery or original Cesium GLSL shader stack."
+    },
+    {
+      "id": "hud",
+      "name": "Tactical/Minimal/Cyber HUD, scope, telemetry and visual controls",
+      "category": "Presentation",
+      "provider": "App state",
+      "keys": "None",
+      "runtime": "Responsive UI, keyboard access and shader settings",
+      "status": "partial",
+      "deploymentNote": "Existing tactical telemetry and panels; no full original HUD/theme/scope set."
+    },
+    {
+      "id": "director",
+      "name": "Cinematic scene director, tours, files and bundles",
+      "category": "Utilities",
+      "provider": "Authored camera moves and data packs",
+      "keys": "Depends on scene content",
+      "runtime": "Scene lifecycle, preview, import/export and camera anchors",
+      "status": "partial",
+      "deploymentNote": "Camera anchors, fly/play/stop, JSON scene import/export and Berlin tour. No original scene bundles/data packs."
+    },
+    {
+      "id": "whiteboard",
+      "name": "Manual and voice pins, routes and area annotations",
+      "category": "Utilities",
+      "provider": "User annotations; source-backed boundaries",
+      "keys": "Voice needs OpenAI; optional source lookups",
+      "runtime": "Drawing lifecycle, resolver, geometry and edit controls",
+      "status": "partial",
+      "deploymentNote": "Manual pins/routes, validated GeoJSON import/export; no voice-drawn polygons or admin-boundary resolver."
+    },
+    {
+      "id": "import",
+      "name": "GeoJSON, KML, KMZ and GPX import",
+      "category": "Utilities",
+      "provider": "User local files",
+      "keys": "None",
+      "runtime": "Client parsers, styles, metadata and terrain placement",
+      "status": "partial",
+      "deploymentNote": "Validated point/route GeoJSON and God Eye scene JSON only; no KML/KMZ/GPX parser."
+    },
+    {
+      "id": "share",
+      "name": "Share camera/style/layers/options/tracked target, reset globe",
+      "category": "Utilities",
+      "provider": "App state",
+      "keys": "None",
+      "runtime": "Deterministic versioned URLs; tracked-target handoff",
+      "status": "partial",
+      "deploymentNote": "Camera/layers/sensor/projection in a share URL; no tracked-target handoff or full original option schema."
+    },
+    {
+      "id": "voice",
+      "name": "Hands-free voice and analyst queries",
+      "category": "AI",
+      "provider": "OpenAI Realtime",
+      "keys": "OpenAI API key; upstream local OAuth option",
+      "runtime": "Server ephemeral token minting, WebRTC, tool schemas and cost controls",
+      "status": "partial",
+      "deploymentNote": "Browser speech recognition for deterministic local commands and counts. No LLM analyst or realtime AI voice."
+    },
+    {
+      "id": "mcp",
+      "name": "MCP server and embeddable conversation panel",
+      "category": "Integration",
+      "provider": "Upstream app tools",
+      "keys": "Depends on operation",
+      "runtime": "Persistent Node MCP server / panel build",
+      "status": "external-runtime-or-provider-required",
+      "deploymentNote": "Available in the pinned original engine subject to its provider/runtime requirements; not implemented in the public Berlin app."
+    },
+    {
+      "id": "flood-scene",
+      "name": "Bhote Koshi flood replay, before/after imagery and witness sources",
+      "category": "Scenes",
+      "provider": "Vantor / GeoPera / witness links",
+      "keys": "Noncommercial imagery and derived-data terms",
+      "runtime": "Scene playback, source links and special data pack",
+      "status": "external-runtime-or-provider-required",
+      "deploymentNote": "Available in the pinned original engine subject to its provider/runtime requirements; not implemented in the public Berlin app."
+    }
+  ],
+  "deploymentVersion": "3.0.0",
+  "originalEnginePath": "vendor/gods-eye-view"
+}

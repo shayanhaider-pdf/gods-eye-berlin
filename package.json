@@ -1,16 +1,17 @@
 {
   "name": "around-me-observatory",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test server/*.test.js scripts/*.test.mjs src/*.test.js",
-    "check": "node --check src/app.js && node --check src/location.js && node --check src/network.js && node --check src/simulation.js && node --check src/overlays.js && node --check src/intelligence.js && node --check server/worker.js",
+    "check": "node --check src/app.js && node --check src/world.js && node --check src/mission-tools.js && node --check src/location.js && node --check server/worker.js && node --check server/world.js && node --check server/world-space.js && node --check server/world-ground.js && node --check server/world-context.js",
     "dev": "npm run build && node scripts/dev.mjs"
   },
   "dependencies": {
-    "maplibre-gl": "^5.10.0"
+    "maplibre-gl": "^5.10.0",
+    "satellite.js": "^6.0.1"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",

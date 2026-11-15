@@ -8,7 +8,7 @@ await mkdir('.build', { recursive: true });
 await build({entryPoints:['src/app.js'],bundle:true,format:'iife',target:'es2022',outfile:'.build/app.js',minify:true,loader:{'.png':'dataurl','.svg':'dataurl'}});
 let html=await readFile('src/index.html','utf8');
 const js=await readFile('.build/app.js','utf8');
-const css=(await readFile('src/style.css','utf8'))+'\n'+(await readFile('src/simulation.css','utf8'))+'\n'+(await readFile('src/intelligence.css','utf8'))+'\n'+(await readFile('src/overlays.css','utf8'));
+const css=(await readFile('src/style.css','utf8'))+'\n'+(await readFile('src/simulation.css','utf8'))+'\n'+(await readFile('src/intelligence.css','utf8'))+'\n'+(await readFile('src/overlays.css','utf8'))+'\n'+(await readFile('src/world.css','utf8'))+'\n'+(await readFile('src/mission-tools.css','utf8'));
 const mapcss=await readFile('node_modules/maplibre-gl/dist/maplibre-gl.css','utf8');
 const revision=createHash('sha256').update(js).update(css).digest('hex').slice(0,12);
 html=html.replace('src="/app.js"',`src="/app.js?v=${revision}"`).replace('href="/style.css"',`href="/style.css?v=${revision}"`);

@@ -138,3 +138,22 @@ test('search immediately selects a precise place and supports direct coordinates
   assert.equal(app.q('#locate').getAttribute('aria-pressed'),'true');
  }finally{app.close();}
 });
+
+test('World data and Mission control open without replacing Berlin controls and survive unavailable feeds',async()=>{
+ const app=await boot();
+ try{
+  app.q('#world-button').click();await app.flush();
+  assert.equal(app.q('#world-drawer').hidden,false);
+  assert.ok(app.window.document.querySelectorAll('[data-world-layer]').length>=30);
+  assert.match(app.q('#world-content').textContent,/World intelligence/);
+  app.q('#mission-button').click();
+  assert.equal(app.q('#world-drawer').hidden,true);
+  assert.equal(app.q('#mission-drawer').hidden,false);
+  app.q('[data-mission="sensor"][data-sensor="nvg"]').click();
+  app.q('[data-mission="tab"][data-tab="marks"]').click();
+  assert.match(app.q('#mission-content').textContent,/Whiteboard|marks/i);
+  app.q('#close-mission').click();
+  assert.equal(app.q('#mission-drawer').hidden,true);
+  assert.ok(app.q('[data-layer="ubahn"]'));
+ }finally{app.close();}
+});
